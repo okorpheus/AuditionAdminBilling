@@ -28,6 +28,10 @@
                         {{ __('Products') }}
                     </flux:sidebar.item>
 
+                    <flux:sidebar.item icon="document-currency-dollar" :href="route('invoices')" :current="request()->routeIs('invoices.*')" wire:navigate>
+                        {{ __('Invoices') }}
+                    </flux:sidebar.item>
+
                 </flux:sidebar.group>
             </flux:sidebar.nav>
 

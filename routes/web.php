@@ -12,6 +12,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::view('clients', 'clients.index')->name('clients');
     Route::view('contacts', 'contacts.index')->name('contacts');
     Route::view('products', 'products.index')->name('products');
+    Route::view('invoices', 'invoices.index')->name('invoices');
 });
 
 // Route::view('dashboard', 'dashboard')
