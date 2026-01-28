@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\ClientStatus;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Client extends Model
 {
@@ -18,4 +19,24 @@ class Client extends Model
         'audition_date' => 'date',
         'status' => ClientStatus::class,
     ];
+
+    public function contacts(): BelongsToMany
+    {
+        return $this->belongsToMany(Contact::class)
+            ->withPivot('is_primary');
+    }
+
+    public function primaryContact(): BelongsToMany
+    {
+        return $this->belongsToMany(Contact::class)
+            ->wherePivot('is_primary', true)
+            ->withPivot('is_primary');
+    }
+
+    public function secondaryContacts(): BelongsToMany
+    {
+        return $this->belongsToMany(Contact::class)
+            ->wherePivot('is_primary', false)
+            ->withPivot('is_primary');
+    }
 }
