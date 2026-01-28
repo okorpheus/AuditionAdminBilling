@@ -114,6 +114,9 @@ new class extends Component {
                                     <flux:navmenu.item
                                         href="{{ route('invoices.edit', $invoice) }}"
                                         icon="pencil">Edit Invoice</flux:navmenu.item>
+                                    <flux:navmenu.item
+                                        href="{{ route('invoices.show', $invoice) }}" target="_blank"
+                                        icon="document-currency-dollar">Customer Invoice</flux:navmenu.item>
                                 </flux:menu.group>
                             </flux:navmenu>
                         </flux:dropdown>
