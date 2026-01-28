@@ -16,8 +16,12 @@
                         {{ __('Dashboard') }}
                     </flux:sidebar.item>
 
-                    <flux:sidebar.item icon="user" :href="route('clients.index')" :current="request()->routeIs('clients.*')" wire:navigate>
+                    <flux:sidebar.item icon="musical-note" :href="route('clients')" :current="request()->routeIs('clients.*')" wire:navigate>
                         {{ __('Clients') }}
+                    </flux:sidebar.item>
+
+                    <flux:sidebar.item icon="user" :href="route('contacts')" :current="request()->routeIs('clients.*')" wire:navigate>
+                        {{ __('Contacts') }}
                     </flux:sidebar.item>
 
                 </flux:sidebar.group>

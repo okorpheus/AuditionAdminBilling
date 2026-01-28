@@ -9,7 +9,8 @@ Route::get('/', function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::view('dashboard', 'dashboard')->name('dashboard');
-    Route::resource('clients', ClientController::class)->names('clients');
+    Route::view('clients', 'clients.index')->name('clients');
+    Route::view('contacts', 'contacts.index')->name('contacts');
 });
 
 // Route::view('dashboard', 'dashboard')
