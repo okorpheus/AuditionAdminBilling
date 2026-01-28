@@ -30,6 +30,7 @@ new class extends Component {
 };
 ?>
 
+<!--suppress RequiredAttributes -->
 <div>
     <flux:table :paginate="$this->clients">
         <flux:table.columns>
