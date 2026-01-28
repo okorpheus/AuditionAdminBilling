@@ -72,14 +72,9 @@ class Invoice extends Model
         return $this->hasMany(InvoiceLine::class);
     }
 
-    public function formattedTotal(): string
-    {
-        return '$'.number_format($this->total, 2);
-    }
-
     public function recalculateTotal(): void
     {
-        $this->total = $this->lines()->sum('amount');
+        $this->attributes['total'] = $this->lines()->sum('amount');
         $this->saveQuietly();
     }
 
