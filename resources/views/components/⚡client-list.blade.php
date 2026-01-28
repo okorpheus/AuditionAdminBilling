@@ -24,6 +24,7 @@ new class extends Component {
     }
 
     #[On('client-created')]
+    #[On('client-updated')]
     public function refresh(): void {}
 
     #[Computed]
@@ -80,8 +81,8 @@ new class extends Component {
 
                             <flux:navmenu>
                                 <flux:menu.group heading="{{ $client->abbreviation }}">
-                                    <flux:navmenu.separator></flux:navmenu.separator>
-                                    <flux:navmenu.item href="#" icon="pencil">Edit</flux:navmenu.item>
+                                    <flux:menu.separator></flux:menu.separator>
+                                    <flux:menu.item wire:click="$dispatch('edit-client', { clientId: {{ $client->id }} })" icon="pencil">Edit</flux:menu.item>
                                 </flux:menu.group>
                             </flux:navmenu>
                         </flux:dropdown>

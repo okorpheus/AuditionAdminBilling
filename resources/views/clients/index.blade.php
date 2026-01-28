@@ -4,5 +4,6 @@
             <livewire:create-client />
         </div>
         <livewire:client-list />
+        <livewire:edit-client />
     </div>
 </x-layouts::app>
