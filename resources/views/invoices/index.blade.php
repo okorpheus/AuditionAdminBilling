@@ -1,4 +1,4 @@
-<x-layouts::app :title="__('Contacts')">
+<x-layouts::app :title="__('Invoices')">
     <div class="max-w-7xl mx-auto space-y-4">
         <div class="flex justify-end">
             <livewire:create-invoice />
