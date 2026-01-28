@@ -4,12 +4,32 @@ namespace App\Models;
 
 use App\Casts\MoneyCast;
 use App\Enums\InvoiceStatus;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Invoice extends Model
 {
+    use HasFactory;
+    public static function booted(): void
+    {
+        static::creating(function (Invoice $invoice) {
+            $invoice->invoice_number ??= static::generateInvoiceNumber();
+        });
+    }
+
+    public static function generateInvoiceNumber(): string
+    {
+        $prefix = date('y').'-';
+
+        do {
+            $number = $prefix.str_pad(random_int(0, 99999), 5, '0', STR_PAD_LEFT);
+        } while (static::where('invoice_number', $number)->exists());
+
+        return $number;
+    }
+
     protected $fillable = [
         'invoice_number',
         'client_id',

@@ -72,12 +72,12 @@ new class extends Component {
         <flux:table.rows>
             @foreach($this->invoices as $invoice)
                 <flux:table.row :key="$invoice->id">
-                    <flux:table.cell>{{ $invoice->number }}</flux:table.cell>
+                    <flux:table.cell>{{ $invoice->invoice_number }}</flux:table.cell>
                     <flux:table.cell>{{ $invoice->client->abbreviation }}</flux:table.cell>
                     <flux:table.cell>{{ $invoice->status->value }}</flux:table.cell>
-                    <flux:table.cell>{{ $invoice->invoice_date }}</flux:table.cell>
-                    <flux:table.cell>{{ $invoice->sent_at }}</flux:table.cell>
-                    <flux:table.cell>{{ $invoice->due_date }}</flux:table.cell>
+                    <flux:table.cell>{{ $invoice->invoice_date?->format('m/d/Y') }}</flux:table.cell>
+                    <flux:table.cell>{{ $invoice->sent_at?->format('m/d/Y') }}</flux:table.cell>
+                    <flux:table.cell>{{ $invoice->due_date?->format('m/d/Y') }}</flux:table.cell>
                     <flux:table.cell>{{ formatMoney($invoice->total) }}</flux:table.cell>
 
                 </flux:table.row>
