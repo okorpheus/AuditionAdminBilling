@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ClientStatus;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -30,11 +31,9 @@ class Client extends Model
             ->withPivot('is_primary');
     }
 
-    public function primaryContact(): BelongsToMany
+    protected function primaryContact(): Attribute
     {
-        return $this->belongsToMany(Contact::class)
-            ->wherePivot('is_primary', true)
-            ->withPivot('is_primary');
+        return Attribute::get(fn () => $this->contacts()->wherePivot('is_primary', true)->first());
     }
 
     public function invoices(): HasMany

@@ -25,7 +25,9 @@ new class extends Component {
 
     #[On('client-created')]
     #[On('client-updated')]
-    public function refresh(): void {}
+    public function refresh(): void
+    {
+    }
 
     #[Computed]
     public function clients()
@@ -47,6 +49,9 @@ new class extends Component {
                                wire:click="sort('abbreviation')">
                 Abbreviation
             </flux:table.column>
+            <flux:table.column>
+                Contacts
+            </flux:table.column>
             <flux:table.column sortable :sorted="$sortBy === 'audition_date'" :direction="$sortDirection"
                                wire:click="sort('audition_date')">
                 Audition Date
@@ -67,6 +72,17 @@ new class extends Component {
                 <flux:table.row :key="$client->id">
                     <flux:table.cell>{{ $client->name }}</flux:table.cell>
                     <flux:table.cell>{{ $client->abbreviation ?? '' }}</flux:table.cell>
+                    <flux:table.cell>
+                        @if($client->primary_contact)
+                            <div class="flex items-center gap-1">
+                                <flux:icon.star variant="micro"/>
+                                {{ $client->primary_contact?->full_name }}
+                            </div>
+                        @endif
+                        @foreach($client->secondaryContacts as $contact)
+                            <p>{{ $contact->full_name }}</p>
+                        @endforeach
+                    </flux:table.cell>
                     <flux:table.cell>{{ $client->audition_date?->local()->format('m/d/Y') ?? '' }}</flux:table.cell>
                     <flux:table.cell>
                         <flux:badge :color="$client->status->color()">
@@ -82,7 +98,18 @@ new class extends Component {
                             <flux:navmenu>
                                 <flux:menu.group heading="{{ $client->abbreviation }}">
                                     <flux:menu.separator></flux:menu.separator>
-                                    <flux:menu.item wire:click="$dispatch('edit-client', { clientId: {{ $client->id }} })" icon="pencil">Edit</flux:menu.item>
+                                    <flux:menu.item
+                                        wire:click="$dispatch('edit-client', { clientId: {{ $client->id }} })"
+                                        icon="pencil">Edit Client
+                                    </flux:menu.item>
+                                </flux:menu.group>
+                                <flux:menu.group heading="Contacts">
+                                    <flux:menu.item
+                                        icon="user-plus">Add Contact
+                                    </flux:menu.item>
+                                    <flux:menu.item
+                                        icon="user-minus">Remove Contact
+                                    </flux:menu.item>
                                 </flux:menu.group>
                             </flux:navmenu>
                         </flux:dropdown>
