@@ -80,7 +80,7 @@ new class extends Component {
 
 <div>
     <div class="flex justify-between items-center mb-8">
-        <flux:heading size="xl" class="mb-3">Edit Invoice</flux:heading>
+        <flux:heading size="xl" class="mb-3">Manage Invoice</flux:heading>
         <div>
             @if($this->invoice->status === InvoiceStatus::DRAFT)
                 <flux:button variant="primary" color="red" wire:click="setStatus('void')">Void Invoice</flux:button>
