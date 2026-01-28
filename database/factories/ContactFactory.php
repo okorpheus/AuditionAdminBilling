@@ -23,7 +23,10 @@ class ContactFactory extends Factory
     public function withClient(?Client $client = null): static
     {
         return $this->afterCreating(function (Contact $contact) use ($client) {
-            $contact->clients()->attach($client ?? Client::factory()->create());
+            $contact->clients()->attach(
+                $client ?? Client::factory()->create(),
+                ['is_primary' => true]
+            );
         });
     }
 }

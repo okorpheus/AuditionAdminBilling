@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\PhoneNumberCast;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,6 +13,10 @@ class Contact extends Model
     use HasFactory;
 
     public $fillable = ['first_name', 'last_name', 'email', 'phone'];
+
+    public $casts = [
+        'phone' => PhoneNumberCast::class,
+    ];
 
     public function clients(): BelongsToMany
     {

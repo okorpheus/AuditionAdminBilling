@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('client_contact', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Client::class)->constrained();
-            $table->foreignIdFor(Contact::class)->constrained();
+            $table->foreignIdFor(Client::class)->constrained()->cascadeOnDelete();
+            $table->foreignIdFor(Contact::class)->constrained()->cascadeOnDelete();
             $table->boolean('is_primary')->default(false);
             $table->timestamps();
 
