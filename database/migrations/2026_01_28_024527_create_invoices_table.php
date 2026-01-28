@@ -16,7 +16,13 @@ return new class extends Migration
             $table->id();
             $table->string('invoice_number')->unique();
             $table->foreignIdFor(Client::class);
-            $table->json('lines');
+            $table->string('status')->default('draft');
+            $table->date('invoice_date')->nullable();
+            $table->date('date_sent')->nullable();
+            $table->date('due_date')->nullable();
+            $table->integer('total');
+            $table->text('notes')->nullable();
+            $table->text('internal_notes')->nullable();
             $table->timestamps();
         });
     }
