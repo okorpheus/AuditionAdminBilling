@@ -11,6 +11,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::view('dashboard', 'dashboard')->name('dashboard');
     Route::view('clients', 'clients.index')->name('clients');
     Route::view('contacts', 'contacts.index')->name('contacts');
+    Route::view('products', 'products.index')->name('products');
 });
 
 // Route::view('dashboard', 'dashboard')

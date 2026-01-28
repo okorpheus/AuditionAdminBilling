@@ -20,8 +20,12 @@
                         {{ __('Clients') }}
                     </flux:sidebar.item>
 
-                    <flux:sidebar.item icon="user" :href="route('contacts')" :current="request()->routeIs('clients.*')" wire:navigate>
+                    <flux:sidebar.item icon="user" :href="route('contacts')" :current="request()->routeIs('contacts.*')" wire:navigate>
                         {{ __('Contacts') }}
+                    </flux:sidebar.item>
+
+                    <flux:sidebar.item icon="archive-box" :href="route('products')" :current="request()->routeIs('products.*')" wire:navigate>
+                        {{ __('Products') }}
                     </flux:sidebar.item>
 
                 </flux:sidebar.group>
