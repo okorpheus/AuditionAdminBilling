@@ -15,7 +15,7 @@ class ClientFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $this->faker->name(),
+            'name' => $this->faker->company(),
             'abbreviation' => $this->faker->word(),
             'audition_date' => $this->faker->dateTimeBetween('+5 days', '+1 year'),
             'status' => ClientStatus::ACTIVE,
