@@ -10,4 +10,8 @@ Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
+Route::view('clients', 'clients.index')
+    ->middleware(['auth', 'verified'])
+    ->name('clients.index');
+
 require __DIR__.'/settings.php';
