@@ -72,6 +72,7 @@ new class extends Component {
                                wire:click="sort('total')">
                 Total
             </flux:table.column>
+            <flux:table.column></flux:table.column>
         </flux:table.columns>
 
         <flux:table.rows>
@@ -103,6 +104,21 @@ new class extends Component {
                         @endif
                     </flux:table.cell>
                     <flux:table.cell>{{ formatMoney($invoice->total) }}</flux:table.cell>
+                    <flux:table.cell>
+                        <flux:dropdown position="bottom" align="start">
+                            <flux:button variant="ghost" size="sm" icon="ellipsis-horizontal" inset="top bottom"></flux:button>
+
+                            <flux:navmenu>
+                                <flux:menu.group heading="{{ $invoice->invoice_number }}">
+                                    <flux:menu.separator></flux:menu.separator>
+                                    <flux:navmenu.item
+                                        href="{{ route('invoices.edit', $invoice) }}"
+                                        icon="pencil">Edit Invoice</flux:navmenu.item>
+                                </flux:menu.group>
+                            </flux:navmenu>
+                        </flux:dropdown>
+
+                    </flux:table.cell>
 
                 </flux:table.row>
             @endforeach

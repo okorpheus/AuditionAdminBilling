@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 class Invoice extends Model
 {
@@ -16,6 +17,7 @@ class Invoice extends Model
     {
         static::creating(function (Invoice $invoice) {
             $invoice->invoice_number ??= static::generateInvoiceNumber();
+            $invoice->uuid = (string) Str::uuid();
         });
     }
 
@@ -48,6 +50,17 @@ class Invoice extends Model
         'due_date' => 'date',
         'sent_at' => 'date',
     ];
+
+    /**
+     * Get the route key for the model.
+     * This tells Laravel to use the 'uuid' column for route model binding.
+     *
+     * @return string
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'uuid';
+    }
 
     public function client(): BelongsTo
     {

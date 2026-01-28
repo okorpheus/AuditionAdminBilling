@@ -22,9 +22,9 @@ enum InvoiceStatus: string
     public function color(): string
     {
         return match ($this) {
-            self::DRAFT => 'gray',
+            self::DRAFT => 'zinc',
             self::POSTED => 'green',
-            self::VOID => 'zinc',
+            self::VOID => 'red',
             self::PAID => 'blue',
         };
     }
