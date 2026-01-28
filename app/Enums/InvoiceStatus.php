@@ -8,4 +8,24 @@ enum InvoiceStatus: string
     case POSTED = 'posted';
     case VOID = 'void';
     case PAID = 'paid';
+
+    public function label(): string
+    {
+        return match ($this) {
+            self::DRAFT => 'Draft',
+            self::POSTED => 'Posted',
+            self::VOID => 'Voided',
+            self::PAID => 'Paid',
+        };
+    }
+
+    public function color(): string
+    {
+        return match ($this) {
+            self::DRAFT => 'gray',
+            self::POSTED => 'green',
+            self::VOID => 'zinc',
+            self::PAID => 'blue',
+        };
+    }
 }

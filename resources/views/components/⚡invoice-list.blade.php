@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\InvoiceStatus;
 use App\Models\Invoice;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -31,7 +32,7 @@ new class extends Component {
 };
 ?>
 
-<!--suppress RequiredAttributes -->
+    <!--suppress RequiredAttributes -->
 <div>
     <flux:table :pagination="$this->invoices">
         <flux:table.columns>
@@ -74,10 +75,29 @@ new class extends Component {
                 <flux:table.row :key="$invoice->id">
                     <flux:table.cell>{{ $invoice->invoice_number }}</flux:table.cell>
                     <flux:table.cell>{{ $invoice->client->abbreviation }}</flux:table.cell>
-                    <flux:table.cell>{{ $invoice->status->value }}</flux:table.cell>
+                    <flux:table.cell>
+                        <flux:badge :color="$invoice->status->color()" rounded size="sm">
+                            {{ $invoice->status->label() }}
+                        </flux:badge>
+                    </flux:table.cell>
                     <flux:table.cell>{{ $invoice->invoice_date?->format('m/d/Y') }}</flux:table.cell>
-                    <flux:table.cell>{{ $invoice->sent_at?->format('m/d/Y') }}</flux:table.cell>
-                    <flux:table.cell>{{ $invoice->due_date?->format('m/d/Y') }}</flux:table.cell>
+                    <flux:table.cell>
+                        @if($invoice->sent_at)
+                            <flux:badge color="green" rounded
+                                        size="sm">{{ $invoice->sent_at->format('m/d/Y') }}</flux:badge>
+                        @elseif($invoice->status === InvoiceStatus::POSTED)
+                            <flux:badge color="red" rounded size="sm">Not Sent</flux:badge>
+                        @endif
+
+                    </flux:table.cell>
+                    <flux:table.cell>
+                        @if($invoice->due_date)
+                            <flux:badge size="sm" rounded
+                            :color="$invoice->due_date?->isPast() && $invoice->status === InvoiceStatus::POSTED ? 'red' : 'blue'">
+                                {{ $invoice->due_date?->format('m/d/Y') }}
+                            </flux:badge>
+                        @endif
+                    </flux:table.cell>
                     <flux:table.cell>{{ formatMoney($invoice->total) }}</flux:table.cell>
 
                 </flux:table.row>
