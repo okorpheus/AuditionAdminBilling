@@ -67,7 +67,7 @@ new class extends Component {
                     <flux:table.cell>{{ $product->sku }}</flux:table.cell>
                     <flux:table.cell>{{ $product->name }}</flux:table.cell>
                     <flux:table.cell class="max-w-xs truncate">{{ $product->description }}</flux:table.cell>
-                    <flux:table.cell>{{ $product->price }}</flux:table.cell>
+                    <flux:table.cell>{{ formatMoney($product->price) }}</flux:table.cell>
                     <flux:table.cell>
                         <flux:badge :color="$product->active ? 'green' : 'zinc'">
                             {{ $product->active ? 'Active' : 'Inactive' }}
