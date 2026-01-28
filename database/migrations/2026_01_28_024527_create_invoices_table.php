@@ -15,12 +15,12 @@ return new class extends Migration
         Schema::create('invoices', function (Blueprint $table) {
             $table->id();
             $table->string('invoice_number')->unique();
-            $table->foreignIdFor(Client::class);
+            $table->foreignIdFor(Client::class)->constrained();
             $table->string('status')->default('draft');
             $table->date('invoice_date')->nullable();
-            $table->date('date_sent')->nullable();
+            $table->date('sent_at')->nullable();
             $table->date('due_date')->nullable();
-            $table->integer('total');
+            $table->unsignedBigInteger('total')->default(0);
             $table->text('notes')->nullable();
             $table->text('internal_notes')->nullable();
             $table->timestamps();

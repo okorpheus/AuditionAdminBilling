@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -14,4 +15,11 @@ class Contact extends Model
     {
         return $this->belongsToMany(Client::class);
     }
+
+    public function invoices(): Builder
+    {
+        return Invoice::whereIn('client_id', $this->clients()->pluck('clients.id'));
+    }
+
+
 }
