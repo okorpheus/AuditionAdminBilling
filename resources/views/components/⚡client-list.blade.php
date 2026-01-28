@@ -3,6 +3,7 @@
 use App\Models\Client;
 use Livewire\Component;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\On;
 use Livewire\WithPagination;
 
 
@@ -21,6 +22,9 @@ new class extends Component {
             $this->sortDirection = 'asc';
         }
     }
+
+    #[On('client-created')]
+    public function refresh(): void {}
 
     #[Computed]
     public function clients()
@@ -61,8 +65,8 @@ new class extends Component {
             @foreach($this->clients as $client)
                 <flux:table.row :key="$client->id">
                     <flux:table.cell>{{ $client->name }}</flux:table.cell>
-                    <flux:table.cell>{{ $client->abbreviation }}</flux:table.cell>
-                    <flux:table.cell>{{ $client->audition_date->local()->format('m/d/Y') }}</flux:table.cell>
+                    <flux:table.cell>{{ $client->abbreviation ?? '' }}</flux:table.cell>
+                    <flux:table.cell>{{ $client->audition_date?->local()->format('m/d/Y') ?? '' }}</flux:table.cell>
                     <flux:table.cell>
                         <flux:badge :color="$client->status->color()">
                             {{ $client->status->value }}

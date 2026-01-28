@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('abbreviation')->nullable();
-            $table->date('audition_date');
+            $table->date('audition_date')->nullable();
             $table->string('status')->default('active');
             $table->timestamps();
         });
