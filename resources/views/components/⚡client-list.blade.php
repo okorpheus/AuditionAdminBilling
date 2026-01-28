@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\ClientStatus;
 use App\Models\Client;
 use Livewire\Component;
 use Livewire\Attributes\Computed;
@@ -21,6 +22,14 @@ new class extends Component {
             $this->sortBy        = $column;
             $this->sortDirection = 'asc';
         }
+    }
+
+    public function changeStatus(Client $client): void
+    {
+        $client->status = $client->status === ClientStatus::ACTIVE
+            ? ClientStatus::INACTIVE
+            : ClientStatus::ACTIVE;
+        $client->save();
     }
 
     #[On('client-created')]
@@ -75,8 +84,8 @@ new class extends Component {
                     <flux:table.cell>
                         @if($client->primary_contact)
                             <div class="flex items-center gap-1">
-                                <flux:icon.star variant="micro"/>
                                 {{ $client->primary_contact?->full_name }}
+                                <flux:icon.star variant="micro"/>
                             </div>
                         @endif
                         @foreach($client->secondaryContacts as $contact)
@@ -102,14 +111,35 @@ new class extends Component {
                                         wire:click="$dispatch('edit-client', { clientId: {{ $client->id }} })"
                                         icon="pencil">Edit Client
                                     </flux:menu.item>
+                                    @if($client->status === ClientStatus::ACTIVE)
+                                        <flux:menu.item
+                                            wire:click="changeStatus({{ $client }})"
+                                            icon="minus-circle">Make Inactive
+                                        </flux:menu.item>
+                                    @else
+                                        <flux:menu.item
+                                            wire:click="changeStatus({{ $client }})"
+                                            icon="plus-circle">Make Active
+                                        </flux:menu.item>
+                                    @endif
                                 </flux:menu.group>
                                 <flux:menu.group heading="Contacts">
                                     <flux:menu.item
+                                        wire:click="$dispatch('add-client-contact', { clientId: {{ $client->id }} })"
                                         icon="user-plus">Add Contact
                                     </flux:menu.item>
-                                    <flux:menu.item
-                                        icon="user-minus">Remove Contact
-                                    </flux:menu.item>
+                                    @if($client->contacts()->count() > 0)
+                                        <flux:menu.item
+                                            wire:click="$dispatch('remove-client-contact', { clientId: {{ $client->id }} })"
+                                            icon="user-minus">Remove Contact
+                                        </flux:menu.item>
+                                    @endif
+                                    @if($client->contacts()->count() > 1)
+                                        <flux:menu.item
+                                            wire:click="$dispatch('set-primary-contact', { clientId: {{ $client->id }} })"
+                                            icon="user">Set Primary Contact
+                                        </flux:menu.item>
+                                    @endif
                                 </flux:menu.group>
                             </flux:navmenu>
                         </flux:dropdown>

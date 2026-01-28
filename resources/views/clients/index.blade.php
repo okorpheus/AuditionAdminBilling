@@ -5,5 +5,8 @@
         </div>
         <livewire:client-list />
         <livewire:edit-client />
+        <livewire:add-client-contact />
+        <livewire:remove-client-contact />
+        <livewire:set-primary-contact />
     </div>
 </x-layouts::app>
