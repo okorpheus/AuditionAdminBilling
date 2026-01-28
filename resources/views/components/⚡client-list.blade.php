@@ -63,7 +63,9 @@ new class extends Component {
                     <flux:table.cell>{{ $client->abbreviation }}</flux:table.cell>
                     <flux:table.cell>{{ $client->audition_date->local()->format('m/d/Y') }}</flux:table.cell>
                     <flux:table.cell>
-                        {{ $client->status }}
+                        <flux:badge :color="$client->status->color()">
+                            {{ $client->status->value }}
+                        </flux:badge>
                     </flux:table.cell>
                     <flux:table.cell>{{ $client->created_at->local()->format('m/d/Y | g:i A') }}</flux:table.cell>
                 </flux:table.row>
