@@ -30,7 +30,7 @@ new class extends Component {
 };
 ?>
 
-<!--suppress RequiredAttributes -->
+    <!--suppress RequiredAttributes -->
 <div>
     <flux:table :paginate="$this->clients">
         <flux:table.columns>
@@ -54,6 +54,7 @@ new class extends Component {
                                wire:click="sort('created_at')">
                 Created
             </flux:table.column>
+            <flux:table.column></flux:table.column>
         </flux:table.columns>
 
         <flux:table.rows>
@@ -68,6 +69,20 @@ new class extends Component {
                         </flux:badge>
                     </flux:table.cell>
                     <flux:table.cell>{{ $client->created_at->local()->format('m/d/Y | g:i A') }}</flux:table.cell>
+                    <flux:table.cell>
+                        <flux:dropdown position="bottom" align="start">
+                            <flux:button variant="ghost" size="sm" icon="ellipsis-horizontal"
+                                         inset="top bottom"></flux:button>
+
+                            <flux:navmenu>
+                                <flux:menu.group heading="{{ $client->abbreviation }}">
+                                    <flux:navmenu.separator></flux:navmenu.separator>
+                                    <flux:navmenu.item href="#" icon="pencil">Edit</flux:navmenu.item>
+                                </flux:menu.group>
+                            </flux:navmenu>
+                        </flux:dropdown>
+
+                    </flux:table.cell>
                 </flux:table.row>
             @endforeach
         </flux:table.rows>

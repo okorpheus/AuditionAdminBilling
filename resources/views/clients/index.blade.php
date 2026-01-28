@@ -1,3 +1,5 @@
 <x-layouts::app :title="__('Clients')">
-    <livewire:client-list />
+    <div class="max-w-7xl mx-auto">
+        <livewire:client-list/>
+    </div>
 </x-layouts::app>
