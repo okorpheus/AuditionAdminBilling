@@ -5,6 +5,7 @@ use App\Models\Invoice;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\On;
 
 
 new class extends Component {
@@ -22,6 +23,9 @@ new class extends Component {
             $this->sortDirection = 'asc';
         }
     }
+
+    #[On('invoice-created')]
+    public function refresh(): void {}
 
     #[Computed]
     public function invoices()
