@@ -33,7 +33,7 @@
                         {{ __('Invoices') }}
                     </flux:sidebar.item>
 
-                    <flux:sidebar.item icon="currency-dollar" href="#" :current="request()->routeIs('payments.*')" wire:navigate>
+                    <flux:sidebar.item icon="currency-dollar" :href="route('payments')" :current="request()->routeIs('payments.*')" wire:navigate>
                         {{ __('Payments') }}
                     </flux:sidebar.item>
 

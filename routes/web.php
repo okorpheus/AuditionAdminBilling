@@ -15,8 +15,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::view('products', 'products.index')->name('products');
     Route::view('invoices', 'invoices.index')->name('invoices');
     Route::get('invoices/{invoice}/edit',
-        fn (Invoice $invoice) => view('invoices.edit', compact('invoice')))->name('invoices.edit');
+        fn(Invoice $invoice) => view('invoices.edit', compact('invoice')))->name('invoices.edit');
     Route::get('invoices/{invoice}', CustomerInvoiceController::class)->name('invoices.show');
+    Route::view('payments', 'payments.index')->name('payments');
 });
 
 // Route::view('dashboard', 'dashboard')
