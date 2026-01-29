@@ -67,13 +67,51 @@
         </tfoot>
     </table>
 
-    <div class="mb-12 p-4 bg-gray-50 rounded">
-        <h2 class="text-sm font-semibold text-gray-500 uppercase mb-2">Payment</h2>
-        <p class="text-gray-700">Please make payment to:</p>
-        <p class="text-gray-800 font-medium mt-1">eBandroom</p>
-        <p class="text-gray-600">540 W. Louse Ave.</p>
-        <p class="text-gray-600">Vinita, OK 74301</p>
-    </div>
+    @if($invoice->payments->count() > 0)
+        <div class="mb-8">
+            <h2 class="text-sm font-semibold text-gray-500 uppercase mb-4">Payments Received</h2>
+            <table class="w-full">
+                <thead>
+                    <tr class="border-b border-gray-300">
+                        <th class="text-left py-2 text-sm font-semibold text-gray-600">Date</th>
+                        <th class="text-left py-2 text-sm font-semibold text-gray-600">Method</th>
+                        <th class="text-left py-2 text-sm font-semibold text-gray-600">Reference</th>
+                        <th class="text-right py-2 text-sm font-semibold text-gray-600">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($invoice->payments as $payment)
+                        <tr class="border-b border-gray-200">
+                            <td class="py-2 text-gray-600">{{ $payment->payment_date->format('F j, Y') }}</td>
+                            <td class="py-2 text-gray-600">{{ $payment->payment_method->label() }}</td>
+                            <td class="py-2 text-gray-600">{{ $payment->reference }}</td>
+                            <td class="py-2 text-right text-gray-800">{{ formatMoney($payment->amount) }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+                <tfoot>
+                    <tr class="border-t border-gray-300">
+                        <td colspan="3" class="py-2 text-right font-semibold text-gray-800">Total Payments</td>
+                        <td class="py-2 text-right font-semibold text-gray-800">{{ formatMoney($invoice->total_payments) }}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" class="py-2 text-right font-bold text-gray-800">Balance Due</td>
+                        <td class="py-2 text-right font-bold text-gray-800 text-lg">{{ formatMoney($invoice->balance_due) }}</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    @endif
+
+    @if($invoice->balance_due != 0)
+        <div class="mb-12 p-4 bg-gray-50 rounded">
+            <h2 class="text-sm font-semibold text-gray-500 uppercase mb-2">Payment</h2>
+            <p class="text-gray-700">Please make payment to:</p>
+            <p class="text-gray-800 font-medium mt-1">eBandroom</p>
+            <p class="text-gray-600">540 W. Louse Ave.</p>
+            <p class="text-gray-600">Vinita, OK 74301</p>
+        </div>
+    @endif
 
     @if($invoice->notes)
         <div class="border-t pt-6">
