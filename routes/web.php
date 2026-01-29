@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CustomerInvoiceController;
+use App\Http\Controllers\StripeController;
 use App\Models\Invoice;
 use Illuminate\Support\Facades\Route;
 
@@ -20,12 +21,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::view('payments', 'payments.index')->name('payments');
 });
 
-// Route::view('dashboard', 'dashboard')
-//    ->middleware(['auth', 'verified'])
-//    ->name('dashboard');
-
-// Route::view('clients', 'clients.index')
-//    ->middleware(['auth', 'verified'])
-//    ->name('clients.index');
+// Testing Stripe
+Route::get('stripe', [StripeController::class, 'index'])->name('stripe.index');
+Route::post('/checkout ', [StripeController::class, 'checkout'])->name('stripe.checkout');
+Route::get('/success', [StripeController::class, 'success'])->name('stripe.success');
 
 require __DIR__.'/settings.php';
