@@ -19,6 +19,11 @@ new class extends Component {
     {
     }
 
+    public function deletePayment(Payment $payment): void
+    {
+        $payment->delete();
+    }
+
 };
 ?>
 
@@ -34,6 +39,7 @@ new class extends Component {
             <flux:table.column>Payment Method<br/>Reference</flux:table.column>
             <flux:table.column>Fee Amount</flux:table.column>
             <flux:table.column>Amount Paid</flux:table.column>
+            <flux:table.column></flux:table.column>
         </flux:table.columns>
 
         <flux:table.rows>
@@ -46,6 +52,24 @@ new class extends Component {
                     <flux:table.cell>{{ $payment->payment_method->label() }}<br>{{ $payment->reference }}</flux:table.cell>
                     <flux:table.cell>{{ formatMoney($payment->fee_amount) }}</flux:table.cell>
                     <flux:table.cell>{{ formatMoney($payment->amount) }}</flux:table.cell>
+                    <flux:table.cell>
+                        <flux:dropdown position="bottom" align="end">
+                            <flux:button variant="ghost" size="sm" icon="ellipsis-horizontal" inset="top bottom"></flux:button>
+
+                            <flux:navmenu>
+                                <flux:menu.item
+                                    wire:click="$dispatch('edit-payment', { paymentId: {{ $payment->id }} })"
+                                    icon="pencil">Edit
+                                </flux:menu.item>
+                                <flux:menu.item
+                                    wire:click="deletePayment({{ $payment->id }})"
+                                    wire:confirm="Are you sure you want to delete this payment?"
+                                    icon="trash"
+                                    variant="danger">Delete
+                                </flux:menu.item>
+                            </flux:navmenu>
+                        </flux:dropdown>
+                    </flux:table.cell>
                 </flux:table.row>
             @endforeach
         </flux:table.rows>

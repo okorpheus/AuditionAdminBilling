@@ -4,5 +4,6 @@
             <livewire:create-payment />
         </div>
         <livewire:payment-list />
+        <livewire:edit-payment />
     </div>
 </x-layouts::app>
