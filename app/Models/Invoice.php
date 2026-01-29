@@ -14,11 +14,12 @@ use Illuminate\Support\Str;
 class Invoice extends Model
 {
     use HasFactory;
+
     public static function booted(): void
     {
         static::creating(function (Invoice $invoice) {
             $invoice->invoice_number ??= static::generateInvoiceNumber();
-            $invoice->uuid = (string) Str::uuid();
+            $invoice->uuid           = (string) Str::uuid();
         });
     }
 
@@ -45,11 +46,13 @@ class Invoice extends Model
     ];
 
     protected $casts = [
-        'total' => MoneyCast::class,
-        'status' => InvoiceStatus::class,
-        'invoice_date' => 'date',
-        'due_date' => 'date',
-        'sent_at' => 'date',
+        'total'          => MoneyCast::class,
+        'total_payments' => MoneyCast::class,
+        'balance_due'    => MoneyCast::class,
+        'status'         => InvoiceStatus::class,
+        'invoice_date'   => 'date',
+        'due_date'       => 'date',
+        'sent_at'        => 'date',
     ];
 
     /**
@@ -82,6 +85,22 @@ class Invoice extends Model
     {
         $this->attributes['total'] = $this->lines()->sum('amount');
         $this->saveQuietly();
+    }
+
+    public function recalculateTotalPayments(): void
+    {
+        $this->attributes['total_payments'] = $this->payments()->sum('amount');
+        $this->saveQuietly();
+
+        $this->refresh();
+
+        if ($this->status === InvoiceStatus::POSTED && $this->balance_due == 0) {
+            $this->status = InvoiceStatus::PAID;
+            $this->saveQuietly();
+        } elseif ($this->status === InvoiceStatus::PAID && $this->balance_due != 0) {
+            $this->status = InvoiceStatus::POSTED;
+            $this->saveQuietly();
+        }
     }
 
     public function isLocked(): bool

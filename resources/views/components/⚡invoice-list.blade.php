@@ -70,7 +70,15 @@ new class extends Component {
             </flux:table.column>
             <flux:table.column sortable :sorted="$sortBy === 'total'" :direction="$sortDirection"
                                wire:click="sort('total')">
-                Total
+                Invoice Total
+            </flux:table.column>
+            <flux:table.column sortable :sorted="$sortBy === 'total_payments'" :direction="$sortDirection"
+                               wire:click="sort('total_payments')">
+                Total Payments
+            </flux:table.column>
+            <flux:table.column sortable :sorted="$sortBy === 'balance_due'" :direction="$sortDirection"
+                               wire:click="sort('balance_due')">
+                Balance Due
             </flux:table.column>
             <flux:table.column></flux:table.column>
         </flux:table.columns>
@@ -104,6 +112,8 @@ new class extends Component {
                         @endif
                     </flux:table.cell>
                     <flux:table.cell>{{ formatMoney($invoice->total) }}</flux:table.cell>
+                    <flux:table.cell>{{ formatMoney($invoice->total_payments) }}</flux:table.cell>
+                    <flux:table.cell>{{ formatMoney($invoice->balance_due) }}</flux:table.cell>
                     <flux:table.cell>
                         <flux:dropdown position="bottom" align="start">
                             <flux:button variant="ghost" size="sm" icon="ellipsis-horizontal" inset="top bottom"></flux:button>

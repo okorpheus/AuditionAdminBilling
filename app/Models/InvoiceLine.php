@@ -33,6 +33,10 @@ class InvoiceLine extends Model
                 throw new InvoiceLockedException;
             }
 
+            if ($line->exists && $line->isDirty('invoice_id')) {
+                throw new \RuntimeException('Cannot move invoice line to another invoice');
+            }
+
             $line->amount = $line->unit_price * $line->quantity;
         });
 

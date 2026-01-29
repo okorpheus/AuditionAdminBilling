@@ -31,6 +31,25 @@ class Payment extends Model
         'payment_method' => PaymentMethod::class,
     ];
 
+    public static function booted(): void
+    {
+        static::saved(function (Payment $payment) {
+            // If invoice_id changed, recalculate the old invoice too
+            if ($payment->wasChanged('invoice_id')) {
+                $originalInvoiceId = $payment->getOriginal('invoice_id');
+                if ($originalInvoiceId) {
+                    Invoice::find($originalInvoiceId)?->recalculateTotalPayments();
+                }
+            }
+
+            $payment->invoice->recalculateTotalPayments();
+        });
+
+        static::deleted(function (Payment $payment) {
+            $payment->invoice->recalculateTotalPayments();
+        });
+    }
+
     public function invoice(): BelongsTo
     {
         return $this->belongsTo(Invoice::class);

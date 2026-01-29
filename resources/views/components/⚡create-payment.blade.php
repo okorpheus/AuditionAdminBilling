@@ -104,7 +104,7 @@ new class extends Component {
                 <option value="">Select an invoice...</option>
                 @foreach ($this->invoices as $invoice)
                     <option value="{{ $invoice->id }}">{{ $invoice->client->abbreviation }}
-                        - {{ $invoice->invoice_number }}</option>
+                        - {{ $invoice->invoice_number }} - Balance: {{ formatMoney($invoice->balance_due) }}</option>
                 @endforeach
             </flux:select>
 
