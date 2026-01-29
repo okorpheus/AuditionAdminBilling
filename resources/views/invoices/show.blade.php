@@ -67,7 +67,12 @@
         </tfoot>
     </table>
 
-    @if($invoice->payments->count() > 0)
+    @php
+        $completedPayments = $invoice->payments->where('status', \App\Enums\PaymentStatus::COMPLETED);
+        $pendingPayments = $invoice->payments->where('status', '!=', \App\Enums\PaymentStatus::COMPLETED);
+    @endphp
+
+    @if($completedPayments->count() > 0)
         <div class="mb-8">
             <h2 class="text-sm font-semibold text-gray-500 uppercase mb-4">Payments Received</h2>
             <table class="w-full">
@@ -80,7 +85,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($invoice->payments as $payment)
+                    @foreach($completedPayments as $payment)
                         <tr class="border-b border-gray-200">
                             <td class="py-2 text-gray-600">{{ $payment->payment_date->format('F j, Y') }}</td>
                             <td class="py-2 text-gray-600">{{ $payment->payment_method->label() }}</td>
@@ -99,6 +104,34 @@
                         <td class="py-2 text-right font-bold text-gray-800 text-lg">{{ formatMoney($invoice->balance_due) }}</td>
                     </tr>
                 </tfoot>
+            </table>
+        </div>
+    @endif
+
+    @if($pendingPayments->count() > 0)
+        <div class="mb-8">
+            <h2 class="text-sm font-semibold text-gray-500 uppercase mb-4">Pending Payments</h2>
+            <table class="w-full">
+                <thead>
+                    <tr class="border-b border-gray-300">
+                        <th class="text-left py-2 text-sm font-semibold text-gray-600">Date</th>
+                        <th class="text-left py-2 text-sm font-semibold text-gray-600">Method</th>
+                        <th class="text-left py-2 text-sm font-semibold text-gray-600">Reference</th>
+                        <th class="text-left py-2 text-sm font-semibold text-gray-600">Status</th>
+                        <th class="text-right py-2 text-sm font-semibold text-gray-600">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($pendingPayments as $payment)
+                        <tr class="border-b border-gray-200">
+                            <td class="py-2 text-gray-600">{{ $payment->payment_date->format('F j, Y') }}</td>
+                            <td class="py-2 text-gray-600">{{ $payment->payment_method->label() }}</td>
+                            <td class="py-2 text-gray-600">{{ $payment->reference }}</td>
+                            <td class="py-2 text-gray-600">{{ $payment->status->label() }}</td>
+                            <td class="py-2 text-right text-gray-800">{{ formatMoney($payment->amount) }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
             </table>
         </div>
     @endif

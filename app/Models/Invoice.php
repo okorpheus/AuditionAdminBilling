@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Casts\MoneyCast;
 use App\Enums\InvoiceStatus;
+use App\Enums\PaymentStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -89,7 +90,7 @@ class Invoice extends Model
 
     public function recalculateTotalPayments(): void
     {
-        $this->attributes['total_payments'] = $this->payments()->sum('amount');
+        $this->attributes['total_payments'] = $this->payments()->where('status', PaymentStatus::COMPLETED)->sum('amount');
         $this->saveQuietly();
 
         $this->refresh();
