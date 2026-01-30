@@ -48,6 +48,8 @@ class StripeController extends Controller
 
     public function webhook(Request $request)
     {
+        \Log::info('Stripe webhook received');
+
         $payload = $request->getContent();
         $signature = $request->header('Stripe-Signature');
 
@@ -58,11 +60,19 @@ class StripeController extends Controller
                 config('services.stripe.webhook_secret')
             );
         } catch (\Exception $e) {
+            \Log::error('Stripe webhook signature verification failed', ['error' => $e->getMessage()]);
             return response('Invalid signature', 400);
         }
 
+        \Log::info('Stripe webhook event', ['type' => $event->type]);
+
         if ($event->type === 'checkout.session.completed') {
             $session = $event->data->object;
+
+            \Log::info('Processing checkout.session.completed', [
+                'invoice_id' => $session->metadata->invoice_id ?? 'not set',
+                'payment_intent' => $session->payment_intent,
+            ]);
 
             $invoice = Invoice::find($session->metadata->invoice_id);
 
@@ -75,9 +85,9 @@ class StripeController extends Controller
                     'expand' => ['latest_charge.balance_transaction'],
                 ]);
 
-                $feeAmount = $paymentIntent->latest_charge->balance_transaction->fee;
+                $feeAmount = $paymentIntent->latest_charge?->balance_transaction?->fee ?? 0;
 
-                Payment::create([
+                $payment = Payment::create([
                     'invoice_id' => $invoice->id,
                     'payment_date' => now(),
                     'status' => PaymentStatus::COMPLETED,
@@ -87,6 +97,10 @@ class StripeController extends Controller
                     'amount' => $session->amount_total / 100,
                     'fee_amount' => $feeAmount / 100,
                 ]);
+
+                \Log::info('Payment created', ['payment_id' => $payment->id, 'fee_amount' => $feeAmount]);
+            } else {
+                \Log::warning('Invoice not found for Stripe webhook', ['invoice_id' => $session->metadata->invoice_id]);
             }
         }
 
