@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\PaymentStatus;
+use App\Enums\PaymentMethod;
 use App\Models\Invoice;
 use App\Models\Payment;
 use Illuminate\Http\Request;
@@ -49,7 +50,7 @@ class StripeController extends Controller
         $signature = $request->header('Stripe-Signature');
 
         try {
-            $event = Webhook::constructEvent(
+            $event = \Stripe\Webhook::constructEvent(
                 $payload,
                 $signature,
                 config('services.stripe.webhook_secret')
@@ -64,6 +65,14 @@ class StripeController extends Controller
             $invoice = Invoice::find($session->metadata->invoice_id);
 
             if ($invoice) {
+                // Retrieve PaymentIntent with expanded charge and balance_transaction
+                $paymentIntent = \Stripe\PaymentIntent::retrieve([
+                    'id' => $session->payment_intent,
+                    'expand' => ['latest_charge.balance_transaction'],
+                ]);
+
+                $feeAmount = $paymentIntent->latest_charge->balance_transaction->fee;
+
                 Payment::create([
                     'invoice_id' => $invoice->id,
                     'payment_date' => now(),
@@ -71,8 +80,8 @@ class StripeController extends Controller
                     'payment_method' => PaymentMethod::CARD,
                     'reference' => $session->payment_intent,
                     'stripe_payment_intent_id' => $session->payment_intent,
-                    'amount' => $session->amount_total / 100, // Stripe sends cents
-                    'fee_amount' => 0, // Can retrieve actual fee via separate API call if needed
+                    'amount' => $session->amount_total / 100,
+                    'fee_amount' => $feeAmount / 100,
                 ]);
             }
         }
