@@ -87,8 +87,7 @@ class StripeController extends Controller
 
         $feeAmount = $paymentIntent->latest_charge?->balance_transaction?->fee ?? 0;
 
-        $email = $session->customer_details?->email;
-        $contact = $email ? Contact::where('email', $email)->first() : null;
+        $contact = $this->findOrCreateContact($session, $invoice);
 
         Payment::create([
             'invoice_id' => $invoice->id,
@@ -123,6 +122,42 @@ class StripeController extends Controller
         $payment->updateQuietly([
             'fee_amount' => $balanceTransaction->fee / 100,
         ]);
+    }
+
+    protected function findOrCreateContact($session, Invoice $invoice): ?Contact
+    {
+        $email = $session->customer_details?->email;
+
+        if (! $email) {
+            return null;
+        }
+
+        $contact = Contact::where('email', $email)->first();
+
+        if ($contact) {
+            return $contact;
+        }
+
+        $name = $session->customer_details?->name ?? '';
+        $lastSpacePos = strrpos($name, ' ');
+
+        if ($lastSpacePos !== false) {
+            $firstName = substr($name, 0, $lastSpacePos);
+            $lastName = substr($name, $lastSpacePos + 1);
+        } else {
+            $firstName = $name;
+            $lastName = '';
+        }
+
+        $contact = Contact::create([
+            'first_name' => $firstName,
+            'last_name' => $lastName,
+            'email' => $email,
+        ]);
+
+        $invoice->client->contacts()->attach($contact);
+
+        return $contact;
     }
 
     public function checkoutTutorial()
