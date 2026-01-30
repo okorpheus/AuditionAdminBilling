@@ -47,7 +47,7 @@ new class extends Component {
                 <flux:table.row>
                     <flux:table.cell>{{ $payment->payment_date->local()->format('m/d/Y') }}</flux:table.cell>
                     <flux:table.cell>{{ $payment->invoice->invoice_number }}</flux:table.cell>
-                    <flux:table.cell>{{ $payment->contact->full_name }}</flux:table.cell>
+                    <flux:table.cell>{{ $payment->contact?->full_name }}</flux:table.cell>
                     <flux:table.cell>{{ $payment->status->label() }}</flux:table.cell>
                     <flux:table.cell>{{ $payment->payment_method->label() }}<br>{{ $payment->reference }}</flux:table.cell>
                     <flux:table.cell>{{ formatMoney($payment->fee_amount) }}</flux:table.cell>

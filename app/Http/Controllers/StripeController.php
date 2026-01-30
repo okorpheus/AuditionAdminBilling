@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\PaymentMethod;
 use App\Enums\PaymentStatus;
+use App\Models\Contact;
 use App\Models\Invoice;
 use App\Models\Payment;
 use Illuminate\Http\Request;
@@ -86,8 +87,12 @@ class StripeController extends Controller
 
         $feeAmount = $paymentIntent->latest_charge?->balance_transaction?->fee ?? 0;
 
+        $email = $session->customer_details?->email;
+        $contact = $email ? Contact::where('email', $email)->first() : null;
+
         Payment::create([
             'invoice_id' => $invoice->id,
+            'contact_id' => $contact?->id,
             'payment_date' => now(),
             'status' => PaymentStatus::COMPLETED,
             'payment_method' => PaymentMethod::CARD,
