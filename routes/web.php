@@ -17,13 +17,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::view('invoices', 'invoices.index')->name('invoices');
     Route::get('invoices/{invoice}/edit',
         fn(Invoice $invoice) => view('invoices.edit', compact('invoice')))->name('invoices.edit');
-    Route::get('invoices/{invoice}', CustomerInvoiceController::class)->name('invoices.show');
     Route::view('payments', 'payments.index')->name('payments');
 });
 
-// Testing Stripe
-Route::get('stripe', [StripeController::class, 'index'])->name('stripe.index');
-Route::post('/checkout ', [StripeController::class, 'checkout'])->name('stripe.checkout');
-Route::get('/success', [StripeController::class, 'success'])->name('stripe.success');
+Route::get('invoices/{invoice}', CustomerInvoiceController::class)->name('invoices.show');
 
+//  Stripe
+Route::get('stripe', [StripeController::class, 'index'])->name('stripe.index');
+Route::post('/stripe/checkout ', [StripeController::class, 'checkout'])->name('stripe.checkout');
+Route::get('/success', [StripeController::class, 'success'])->name('stripe.success');
+Route::post('stripe/webhook', [StripeController::class, 'webhook'])->name('stripe.webhook');
 require __DIR__.'/settings.php';
