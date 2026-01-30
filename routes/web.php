@@ -24,7 +24,7 @@ Route::get('invoices/{invoice}', CustomerInvoiceController::class)->name('invoic
 
 //  Stripe
 Route::get('stripe', [StripeController::class, 'index'])->name('stripe.index');
-Route::post('/stripe/checkout ', [StripeController::class, 'checkout'])->name('stripe.checkout');
-Route::get('/success', [StripeController::class, 'success'])->name('stripe.success');
+Route::post('/stripe/checkout/{invoice}', [StripeController::class, 'checkout'])->name('stripe.checkout');
+Route::get('/stripe/success/{invoice}', [StripeController::class, 'success'])->name('stripe.success');
 Route::post('stripe/webhook', [StripeController::class, 'webhook'])->name('stripe.webhook');
 require __DIR__.'/settings.php';

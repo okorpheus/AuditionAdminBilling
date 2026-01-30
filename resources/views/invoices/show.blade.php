@@ -137,12 +137,33 @@
     @endif
 
     @if($invoice->balance_due != 0)
-        <div class="mb-12 p-4 bg-gray-50 rounded">
-            <h2 class="text-sm font-semibold text-gray-500 uppercase mb-2">Payment</h2>
-            <p class="text-gray-700">Please make payment to:</p>
-            <p class="text-gray-800 font-medium mt-1">eBandroom</p>
-            <p class="text-gray-600">540 W. Louse Ave.</p>
-            <p class="text-gray-600">Vinita, OK 74301</p>
+        <div class="mb-12 p-6 bg-gray-50 rounded-lg">
+            <h2 class="text-sm font-semibold text-gray-500 uppercase mb-4">Payment Options</h2>
+
+            <div class="flex flex-col md:flex-row gap-6">
+                <div class="flex-1">
+                    <h3 class="font-medium text-gray-800 mb-2">Pay Online</h3>
+                    <p class="text-gray-600 text-sm mb-4">Pay securely with your credit or debit card.</p>
+                    <form action="{{ route('stripe.checkout', $invoice) }}" method="POST">
+                        @csrf
+                        <button type="submit"
+                                class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                            </svg>
+                            Pay {{ formatMoney($invoice->balance_due) }} Now
+                        </button>
+                    </form>
+                </div>
+
+                <div class="flex-1">
+                    <h3 class="font-medium text-gray-800 mb-2">Pay by Mail</h3>
+                    <p class="text-gray-600 text-sm mb-2">Make check payable to:</p>
+                    <p class="text-gray-800 font-medium">eBandroom</p>
+                    <p class="text-gray-600">540 W. Louse Ave.</p>
+                    <p class="text-gray-600">Vinita, OK 74301</p>
+                </div>
+            </div>
         </div>
     @endif
 

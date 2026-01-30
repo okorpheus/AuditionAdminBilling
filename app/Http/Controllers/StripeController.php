@@ -19,6 +19,8 @@ class StripeController extends Controller
 
     public function checkout(Invoice $invoice)
     {
+        Stripe::setApiKey(config('services.stripe.secret'));
+
         $session = \Stripe\Checkout\Session::create([
             'payment_method_types' => ['card'],
             'line_items' => [
@@ -28,16 +30,16 @@ class StripeController extends Controller
                         'product_data' => [
                             'name' => "Invoice {$invoice->invoice_number}",
                         ],
-                        'unit_amount' => $invoice->balance_due * 100, // Already in cents from MoneyCast? Check this
+                        'unit_amount' => (int) ($invoice->balance_due * 100),
                     ],
                     'quantity' => 1,
                 ],
             ],
             'mode' => 'payment',
-            'success_url' => route('checkout.success', $invoice),
-            'cancel_url' => route('invoice.show', $invoice),
+            'success_url' => route('stripe.success', $invoice),
+            'cancel_url' => route('invoices.show', $invoice),
             'metadata' => [
-                'invoice_id' => $invoice->id, // Used by webhook to find the invoice
+                'invoice_id' => $invoice->id,
             ],
         ]);
 
@@ -65,6 +67,8 @@ class StripeController extends Controller
             $invoice = Invoice::find($session->metadata->invoice_id);
 
             if ($invoice) {
+                Stripe::setApiKey(config('services.stripe.secret'));
+
                 // Retrieve PaymentIntent with expanded charge and balance_transaction
                 $paymentIntent = \Stripe\PaymentIntent::retrieve([
                     'id' => $session->payment_intent,
@@ -114,8 +118,8 @@ class StripeController extends Controller
         return redirect()->away($session->url);
     }
 
-    public function success()
+    public function success(Invoice $invoice)
     {
-        return view('stripe.index');
+        return view('stripe.success', compact('invoice'));
     }
 }
