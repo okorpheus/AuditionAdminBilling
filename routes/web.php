@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CustomerInvoiceController;
+use App\Http\Controllers\StripeController;
 use App\Models\Invoice;
 use Illuminate\Support\Facades\Route;
 
@@ -16,16 +17,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::view('invoices', 'invoices.index')->name('invoices');
     Route::get('invoices/{invoice}/edit',
         fn(Invoice $invoice) => view('invoices.edit', compact('invoice')))->name('invoices.edit');
-    Route::get('invoices/{invoice}', CustomerInvoiceController::class)->name('invoices.show');
     Route::view('payments', 'payments.index')->name('payments');
 });
 
-// Route::view('dashboard', 'dashboard')
-//    ->middleware(['auth', 'verified'])
-//    ->name('dashboard');
+Route::get('invoices/{invoice}', CustomerInvoiceController::class)->name('invoices.show');
 
-// Route::view('clients', 'clients.index')
-//    ->middleware(['auth', 'verified'])
-//    ->name('clients.index');
-
+//  Stripe
+Route::get('stripe', [StripeController::class, 'index'])->name('stripe.index');
+Route::post('/stripe/checkout/{invoice}', [StripeController::class, 'checkout'])->name('stripe.checkout');
+Route::get('/stripe/success/{invoice}', [StripeController::class, 'success'])->name('stripe.success');
+Route::post('stripe/webhook', [StripeController::class, 'webhook'])->name('stripe.webhook');
 require __DIR__.'/settings.php';
