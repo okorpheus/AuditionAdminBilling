@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\PaymentStatus;
 use App\Enums\PaymentMethod;
+use App\Enums\PaymentStatus;
 use App\Models\Invoice;
 use App\Models\Payment;
 use Illuminate\Http\Request;
 use Stripe\Stripe;
-use Stripe\Webhook;
 
 class StripeController extends Controller
 {
@@ -48,8 +47,6 @@ class StripeController extends Controller
 
     public function webhook(Request $request)
     {
-        \Log::info('Stripe webhook received');
-
         $payload = $request->getContent();
         $signature = $request->header('Stripe-Signature');
 
@@ -60,51 +57,67 @@ class StripeController extends Controller
                 config('services.stripe.webhook_secret')
             );
         } catch (\Exception $e) {
-            \Log::error('Stripe webhook signature verification failed', ['error' => $e->getMessage()]);
             return response('Invalid signature', 400);
         }
 
-        \Log::info('Stripe webhook event', ['type' => $event->type]);
-
-        if ($event->type === 'checkout.session.completed') {
-            $session = $event->data->object;
-
-            \Log::info('Processing checkout.session.completed', [
-                'invoice_id' => $session->metadata->invoice_id ?? 'not set',
-                'payment_intent' => $session->payment_intent,
-            ]);
-
-            $invoice = Invoice::find($session->metadata->invoice_id);
-
-            if ($invoice) {
-                Stripe::setApiKey(config('services.stripe.secret'));
-
-                // Retrieve PaymentIntent with expanded charge and balance_transaction
-                $paymentIntent = \Stripe\PaymentIntent::retrieve([
-                    'id' => $session->payment_intent,
-                    'expand' => ['latest_charge.balance_transaction'],
-                ]);
-
-                $feeAmount = $paymentIntent->latest_charge?->balance_transaction?->fee ?? 0;
-
-                $payment = Payment::create([
-                    'invoice_id' => $invoice->id,
-                    'payment_date' => now(),
-                    'status' => PaymentStatus::COMPLETED,
-                    'payment_method' => PaymentMethod::CARD,
-                    'reference' => $session->payment_intent,
-                    'stripe_payment_intent_id' => $session->payment_intent,
-                    'amount' => $session->amount_total / 100,
-                    'fee_amount' => $feeAmount / 100,
-                ]);
-
-                \Log::info('Payment created', ['payment_id' => $payment->id, 'fee_amount' => $feeAmount]);
-            } else {
-                \Log::warning('Invoice not found for Stripe webhook', ['invoice_id' => $session->metadata->invoice_id]);
-            }
-        }
+        match ($event->type) {
+            'checkout.session.completed' => $this->handleCheckoutSessionCompleted($event->data->object),
+            'charge.updated' => $this->handleChargeUpdated($event->data->object),
+            default => null,
+        };
 
         return response('OK', 200);
+    }
+
+    protected function handleCheckoutSessionCompleted($session): void
+    {
+        $invoice = Invoice::find($session->metadata->invoice_id);
+
+        if (! $invoice) {
+            return;
+        }
+
+        Stripe::setApiKey(config('services.stripe.secret'));
+
+        $paymentIntent = \Stripe\PaymentIntent::retrieve([
+            'id' => $session->payment_intent,
+            'expand' => ['latest_charge.balance_transaction'],
+        ]);
+
+        $feeAmount = $paymentIntent->latest_charge?->balance_transaction?->fee ?? 0;
+
+        Payment::create([
+            'invoice_id' => $invoice->id,
+            'payment_date' => now(),
+            'status' => PaymentStatus::COMPLETED,
+            'payment_method' => PaymentMethod::CARD,
+            'reference' => $session->payment_intent,
+            'stripe_payment_intent_id' => $session->payment_intent,
+            'amount' => $session->amount_total / 100,
+            'fee_amount' => $feeAmount / 100,
+        ]);
+    }
+
+    protected function handleChargeUpdated($charge): void
+    {
+        if (! $charge->payment_intent || ! $charge->balance_transaction) {
+            return;
+        }
+
+        $payment = Payment::where('stripe_payment_intent_id', $charge->payment_intent)->first();
+
+        if (! $payment) {
+            return;
+        }
+
+        Stripe::setApiKey(config('services.stripe.secret'));
+
+        $balanceTransaction = \Stripe\BalanceTransaction::retrieve($charge->balance_transaction);
+
+        // Always update the fee - handles both initial capture and any corrections
+        $payment->updateQuietly([
+            'fee_amount' => $balanceTransaction->fee / 100,
+        ]);
     }
 
     public function checkoutTutorial()
