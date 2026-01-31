@@ -1,5 +1,4 @@
 {
-    "$schema": "https://getcomposer.org/schema.json",
     "name": "laravel/livewire-starter-kit",
     "type": "project",
     "description": "The official Laravel starter kit for Livewire.",
@@ -19,8 +18,8 @@
         "symfony/clock": "^7.0",
         "symfony/css-selector": "^7.0",
         "symfony/event-dispatcher": "^7.0",
-        "symfony/http-client": "^8.0",
-        "symfony/mailgun-mailer": "^8.0",
+        "symfony/http-client": "^7.0",
+        "symfony/mailgun-mailer": "^7.0",
         "symfony/string": "^7.0",
         "symfony/translation": "^7.0"
     },
