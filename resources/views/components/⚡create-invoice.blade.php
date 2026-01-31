@@ -24,7 +24,7 @@ new class extends Component {
     {
         $this->validate();
 
-        Invoice::create([
+        $invoice = Invoice::create([
             'client_id'      => $this->client_id,
             'status'         => $this->status,
             'notes'          => $this->notes,
@@ -34,6 +34,8 @@ new class extends Component {
         $this->reset();
         Flux::modal('create-invoice')->close();
         $this->dispatch('invoice-created');
+
+        $this->redirect(route('invoices.edit', $invoice), navigate: true);
     }
 
     #[Computed]

@@ -1,12 +1,14 @@
 <?php
 
 use App\Enums\InvoiceStatus;
+use App\Mail\InvoiceMail;
 use App\Models\Client;
 use App\Models\Invoice;
+use Illuminate\Support\Facades\Mail;
 use Livewire\Component;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Validate;
-
+use Flux\Flux;
 
 new class extends Component {
     public $invoice;
@@ -72,6 +74,56 @@ new class extends Component {
         $this->dispatch('invoice-status-changed');
     }
 
+    public function sendToPrimaryContact(): void
+    {
+        $primaryContact = $this->invoice->client->primary_contact;
+
+        if (!$primaryContact || !$primaryContact->email) {
+            Flux::toast(
+                text: 'No primary contact with email address found.',
+                variant: 'danger',
+            );
+            return;
+        }
+
+        Mail::to($primaryContact->email)->send(new InvoiceMail($this->invoice));
+
+        if ($this->invoice->sent_at === null) {
+            $this->invoice->update(['sent_at' => now()]);
+        }
+
+        Flux::toast(
+            text: "Invoice sent to {$primaryContact->full_name}.",
+            variant: 'success',
+        );
+    }
+
+    public function sendToAllContacts(): void
+    {
+        $contacts = $this->invoice->client->contacts->filter(fn($c) => $c->email);
+
+        if ($contacts->isEmpty()) {
+            Flux::toast(
+                text: 'No contacts with email addresses found.',
+                variant: 'danger',
+            );
+            return;
+        }
+
+        foreach ($contacts as $contact) {
+            Mail::to($contact->email)->send(new InvoiceMail($this->invoice));
+        }
+
+        if ($this->invoice->sent_at === null) {
+            $this->invoice->update(['sent_at' => now()]);
+        }
+
+        Flux::toast(
+            text: "Invoice sent to {$contacts->count()} contact(s).",
+            variant: 'success',
+        );
+    }
+
     #[Computed]
     public function clients()
     {
@@ -90,6 +142,8 @@ new class extends Component {
             @elseif($this->invoice->status === InvoiceStatus::POSTED)
                 <flux:button variant="primary" color="red" wire:click="setStatus('void')">Void Invoice</flux:button>
                 <flux:button variant="primary" color="amber" wire:click="setStatus('draft')">Un-Post Invoice</flux:button>
+                <flux:button variant="primary" wire:click="sendToPrimaryContact" wire:loading.attr="disabled">Send to Primary Contact</flux:button>
+                <flux:button variant="primary" wire:click="sendToAllContacts" wire:loading.attr="disabled">Send to All Contacts</flux:button>
             @elseif($this->invoice->status === InvoiceStatus::VOID)
                 <flux:button variant="primary" color="blue" wire:click="setStatus('draft')">Restore Invoice</flux:button>
             @endif
